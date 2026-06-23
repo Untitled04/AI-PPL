@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b1220">
+<title>Ch.2 — Newton's First Law (Inertia)</title>
+<style>
+  :root{
+    --bg:#0b1220; --card:#131c2e; --card2:#0f1726; --ink:#e8eef7; --muted:#9fb0c8;
+    --acc:#4cc2ff; --good:#39d98a; --line:#243149; --pill:#1d2940;
+  }
+  @media (prefers-color-scheme: light){
+    :root{ --bg:#f6f8fc; --card:#ffffff; --card2:#f0f4fb; --ink:#13203a; --muted:#56657f;
+           --acc:#0a6bd6; --good:#0f9d58; --line:#e1e8f3; --pill:#eef3fb; }
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:17px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    padding:0 16px env(safe-area-inset-bottom) 16px;}
+  .wrap{max-width:760px;margin:0 auto}
+  header{padding:26px 0 8px}
+  h1{font-size:25px;line-height:1.25;margin:0 0 6px}
+  .sub{color:var(--muted);font-size:15px;margin:0 0 14px}
+  .legend{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 4px}
+  .tag{background:var(--pill);border:1px solid var(--line);border-radius:999px;
+    padding:5px 11px;font-size:13px;color:var(--muted)}
+  h2{font-size:20px;margin:30px 0 6px;padding-top:14px;border-top:1px solid var(--line)}
+  h3{font-size:17px;margin:20px 0 6px;color:var(--acc)}
+  p{margin:10px 0}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:14px 16px;margin:14px 0}
+  .idea{border-left:4px solid var(--acc);background:var(--card2)}
+  .law{border-left:4px solid var(--good);background:var(--card2)}
+  pre{background:var(--card2);border:1px solid var(--line);border-radius:12px;
+    padding:12px;overflow-x:auto;font-size:13px;line-height:1.45;color:var(--muted);
+    -webkit-overflow-scrolling:touch}
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:15px;display:block;overflow-x:auto}
+  th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+  th{background:var(--card2);color:var(--muted);font-weight:600;white-space:nowrap}
+  details{background:var(--card);border:1px solid var(--line);border-radius:14px;margin:12px 0;overflow:hidden}
+  summary{cursor:pointer;list-style:none;padding:14px 44px 14px 16px;position:relative;
+    font-weight:600;font-size:16px}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"▶";position:absolute;right:16px;top:14px;color:var(--acc);
+    transition:transform .2s;font-size:13px}
+  details[open] summary::after{transform:rotate(90deg)}
+  .q{color:var(--muted);font-weight:600;font-size:13px;letter-spacing:.04em;text-transform:uppercase}
+  .ans{padding:0 16px 14px;border-top:1px solid var(--line);margin-top:2px}
+  .ans b{color:var(--good)}
+  .opts{color:var(--muted);font-size:15px;font-weight:400;margin-top:6px;display:block}
+  .ex summary{background:var(--card2)}
+  .key b{color:var(--good)}
+  .toc a{color:var(--acc);text-decoration:none}
+  .toc li{margin:4px 0}
+  footer{color:var(--muted);font-size:13px;margin:30px 0 50px;border-top:1px solid var(--line);padding-top:14px}
+  a{color:var(--acc)}
+  .top{position:fixed;right:14px;bottom:14px;background:var(--acc);color:#04121f;
+    border-radius:999px;padding:10px 14px;font-size:14px;font-weight:700;text-decoration:none;
+    box-shadow:0 6px 18px rgba(0,0,0,.35)}
+</style>
+</head>
+<body>
+<div class="wrap" id="top">
+<header>
+  <h1>Chapter 2 — Newton's First Law of Motion: Inertia</h1>
+  <p class="sub">A phone-friendly study guide. Read a bit, try the question, then tap to reveal the answer.</p>
+  <div class="legend">
+    <span class="tag">🧠 Concept Checks = explain the ideas</span>
+    <span class="tag">🛠️ Worked Examples = ideas in action</span>
+  </div>
+  <p class="sub" style="margin-top:10px"><b>One-sentence summary:</b> things keep doing what they're already doing — staying still, or moving in a straight line at constant speed — unless a net force changes that.</p>
+</header>
+
+<div class="card">
+  <b>Jump to:</b>
+  <ul class="toc">
+    <li><a href="#s1">1 · Aristotle vs. Galileo</a></li>
+    <li><a href="#s2">2 · Inertia</a></li>
+    <li><a href="#s3">3 · Forces, vectors & net force</a></li>
+    <li><a href="#s4">4 · Newton's First Law in action</a></li>
+    <li><a href="#s5">5 · Equilibrium (ΣF = 0)</a></li>
+    <li><a href="#s6">6 · 🛠️ Worked Examples</a></li>
+    <li><a href="#s7">7 · Cheat sheet</a></li>
+    <li><a href="#s8">8 · Answer key</a></li>
+  </ul>
+</div>
+
+<!-- 1 -->
+<h2 id="s1">1 · Two ways of thinking about motion</h2>
+<p>For ~2000 years <b>Aristotle</b> taught that a moving object naturally <i>wants to stop</i>, and that Earth must sit still at the center — because we <i>feel</i> no motion.</p>
+<p>Then <b>Galileo</b> ran experiments. Rolling balls on ramps, he reasoned that a ball <i>wants to keep going</i> and only slows because of <b>friction</b>. Remove friction → motion never stops on its own. That's the seed of <b>inertia</b>.</p>
+<pre>  Release here                       Rises to (almost)
+        \                              the same height
+         \____________________________/
+                (level stretch)</pre>
+<p>Make the second ramp flatter and the ball rolls farther to reach the same height. Flatten it fully and — in a frictionless world — it rolls <b>forever</b>.</p>
+<div class="card idea">💡 <b>Big idea:</b> a moving object doesn't need a force to <i>keep</i> moving. It needs a force only to <i>change</i> its motion.</div>
+
+<details><summary><span class="q">Q1 · Concept</span><br>Aristotle thought Earth was at rest because…<span class="opts">a) we feel no sensation of a moving Earth · b) Earth rotates · c) perfect circle · d) elliptical path</span></summary>
+<div class="ans"><p><b>Answer: a.</b> We feel no sensation of motion, so it <i>seemed</i> Earth was still. Smooth, steady motion is undetectable from the inside.</p></div></details>
+
+<details><summary><span class="q">Q2 · Concept</span><br>Science advanced when Galileo favored…<span class="opts">a) philosophy over experiment · b) experiment over philosophy · c) nonmathematical thinking · d) none</span></summary>
+<div class="ans"><p><b>Answer: b.</b> His revolution was <b>testing ideas by experiment</b> instead of just debating them.</p></div></details>
+
+<details><summary><span class="q">Q3 · Concept</span><br>Roll a ball on a level surface and it would…<span class="opts">a) slow to rest naturally · b) keep rolling if no friction · c) roll as long as inertia nudges it · d) reverse</span></summary>
+<div class="ans"><p><b>Answer: b.</b> With <b>no friction</b>, nothing removes its motion. (c) is a trap — inertia doesn't <i>nudge</i>; it isn't a force.</p></div></details>
+
+<details><summary><span class="q">Q4 · Concept</span><br>Down one incline, up another — the ball rolled…<span class="opts">a) almost to its initial height · b) halfway · c) to its original height · d) higher</span></summary>
+<div class="ans"><p><b>Answer: a.</b> In the real experiment it reaches <b>almost</b> its start; the shortfall is <b>friction</b>. The frictionless idealization ("to its original height") is what reveals inertia.</p></div></details>
+
+<!-- 2 -->
+<h2 id="s2">2 · Inertia: the lazy property of matter</h2>
+<p><b>Inertia</b> is the resistance of any object to a <i>change</i> in its motion. At rest → wants to stay at rest. Moving → wants to keep moving straight at constant speed. More <b>mass</b> → more inertia (a loaded truck vs. a bicycle).</p>
+<div class="card idea">⚠️ <b>Top misconception:</b> inertia is <b>not a force</b>. It's a property every chunk of matter has. Nothing "pushes" with inertia.</div>
+
+<details><summary><span class="q">Q5 · Concept</span><br>According to Galileo, inertia is a…<span class="opts">a) force like any other · b) special force · c) property of all matter · d) opposite of force</span></summary>
+<div class="ans"><p><b>Answer: c.</b> A <b>property of all matter</b>. If you picked "force," re-read the warning above.</p></div></details>
+
+<!-- 3 -->
+<h2 id="s3">3 · Forces, vectors & the net force</h2>
+<p>A <b>force</b> is a push or pull. A <b>vector</b> needs both <b>size</b> and <b>direction</b>.</p>
+<table><tr><th>Quantity</th><th>Vector?</th><th>Why</th></tr>
+<tr><td>Speed</td><td>❌ No</td><td>Magnitude only ("50 km/h")</td></tr>
+<tr><td>Velocity</td><td>✅ Yes</td><td>Speed + direction</td></tr>
+<tr><td>Force</td><td>✅ Yes</td><td>Strength + direction</td></tr></table>
+<p>The <b>net force</b> = the single force with the same effect as all of them. Same direction → add. Opposite → subtract, pointing the way of the bigger one.</p>
+<pre>  Girl 100 N ◀──────●────▶ Boy 50 N
+        Net = 100 − 50 = 50 N to the LEFT</pre>
+
+<details><summary><span class="q">Q6 · Concept</span><br>Which is <b>NOT</b> a vector?<span class="opts">a) Speed · b) Velocity · c) Force · d) all are vectors</span></summary>
+<div class="ans"><p><b>Answer: a.</b> <b>Speed</b> is just a number; velocity and force carry direction.</p></div></details>
+
+<details><summary><span class="q">Q7 · Concept</span><br>Girl pushes left 100 N, boy right 50 N. Net force?<span class="opts">a) 100 N left · b) 100 N right · c) 50 N left · d) 50 N right</span></summary>
+<div class="ans"><p><b>Answer: c.</b> 100 − 50 = <b>50 N to the left</b> (toward the stronger push).</p></div></details>
+
+<details><summary><span class="q">Q8 · Concept</span><br>10-kg block: 20 N east + 15 N west. Combined force?<span class="opts">a) 35 N west · b) 35 N east · c) 5 N east · d) 5 N west</span></summary>
+<div class="ans"><p><b>Answer: c.</b> 20 − 15 = <b>5 N east</b>. The 10 kg is a distractor — you don't need mass for the net force.</p></div></details>
+
+<!-- 4 -->
+<h2 id="s4">4 · Newton's First Law in action</h2>
+<div class="card law"><b>Newton's First Law (Law of Inertia):</b> every object continues at rest, or in uniform straight-line motion, unless acted on by a <b>net force</b>.</div>
+<p>Remove the net force and motion doesn't fade — it <b>coasts</b>. Take away the force that curves a path, and the object flies off <b>straight</b>.</p>
+<ul>
+<li><b>Tablecloth trick:</b> dishes stay put — inertia keeps them at rest while the cloth slips out.</li>
+<li><b>Ball in a jerked cart:</b> the ball "stays behind," so the back wall catches up to it.</li>
+<li><b>Space probe:</b> no force acting, yet it keeps cruising.</li>
+<li><b>Earth &amp; Sun:</b> if gravity vanished, Earth shoots off in a straight line.</li>
+<li><b>Jump by a wall:</b> you both already share Earth's ~30 km/s, so nothing slams into you.</li>
+</ul>
+
+<details><summary><span class="q">Q9 · Concept</span><br>Dishes stay as you yank the cloth — illustrating…<span class="opts">a) friction · b) inertia · c) constant motion · d) ΣF = 0</span></summary>
+<div class="ans"><p><b>Answer: b.</b> <b>Inertia</b> — the dishes resist a change from rest.</p></div></details>
+
+<details><summary><span class="q">Q10 · Concept</span><br>If Sun–Earth gravity vanished, Earth would move in…<span class="opts">a) curved path · b) outward spiral · c) inward spiral · d) straight line</span></summary>
+<div class="ans"><p><b>Answer: d.</b> No force to bend the path → a <b>straight line</b>.</p></div></details>
+
+<details><summary><span class="q">Q11 · Concept</span><br>A space probe in deep space keeps moving…<span class="opts">a) because a force acts · b) in a curve · c) even though no force acts · d) due to gravity</span></summary>
+<div class="ans"><p><b>Answer: c.</b> No force is needed to <i>keep</i> moving.</p></div></details>
+
+<details><summary><span class="q">Q12 · Concept</span><br>Ball in the middle of a cart; jerk the cart forward. The ball…<span class="opts">a) hits the front · b) hits the back · c) stays in the middle · d) depends</span></summary>
+<div class="ans"><p><b>Answer: b.</b> The ball tends to <b>stay at rest</b>; the cart shoots forward, so the <b>back wall meets the ball</b>.</p></div></details>
+
+<details><summary><span class="q">Q13 · Concept</span><br>Earth moves ~30 km/s; jump by a wall and it doesn't hit you because the wall…<span class="opts">a) too little gravity · b) moves opposite · c) shares your horizontal speed throughout · d) negligible inertia</span></summary>
+<div class="ans"><p><b>Answer: c.</b> You and the wall <b>share the same horizontal motion</b> the whole time — exactly why Earth's motion is unfelt.</p></div></details>
+
+<!-- 5 -->
+<h2 id="s5">5 · Equilibrium: when forces cancel (ΣF = 0)</h2>
+<p>When forces add to <b>zero</b>, the object is in <b>equilibrium</b>. ΣF means "sum of all forces."</p>
+<div class="card law"><b>Equilibrium rule: ΣF = 0.</b> Holds for anything <b>at rest</b> <i>and</i> anything at <b>constant straight-line velocity</b>. Handy form: <b>total up = total down</b>.</div>
+<p><b>Support force:</b> a 10 N book on a table → the table pushes up exactly 10 N. <b>Tension:</b> a 10 N weight on two even strands → 5 N each.</p>
+<pre>  Tension(L) ▲                  ▲ Tension(R)
+             └──[ scaffold + painters ]──┘
+                        │ weight ▼
+   Tension(L) + Tension(R) = total weight  (up = down)</pre>
+<p>Painters on <b>opposite ends</b> → tensions depend on their weights. One painter (or a piggy-back pair) in the <b>exact middle</b> → tensions are equal by symmetry.</p>
+
+<details><summary><span class="q">Q14 · Concept</span><br>10-N object on two vertical strands — tension in each?<span class="opts">a) &lt;5 N · b) 5 N · c) &gt;5 N · d) 10 N</span></summary>
+<div class="ans"><p><b>Answer: b.</b> Shared evenly → <b>5 N each</b> (5 + 5 = 10).</p></div></details>
+
+<details><summary><span class="q">Q15 · Concept</span><br>Burl &amp; Paul on opposite ends — the two rope tensions…<span class="opts">a) are equal · b) depend on their relative weights · c) add to zero · d) are in equilibrium</span></summary>
+<div class="ans"><p><b>Answer: b.</b> The rope nearer the heavier painter carries more — equal <i>only</i> if they weigh the same.</p></div></details>
+
+<details><summary><span class="q">Q16 · Concept</span><br>Burl carries Paul piggy-back in the <b>middle</b> — tensions…<span class="opts">a) cancel to zero · b) be equal · c) be unequal · d) support more easily</span></summary>
+<div class="ans"><p><b>Answer: b.</b> Dead center = symmetric load → <b>equal</b> tensions.</p></div></details>
+
+<details><summary><span class="q">Q17 · Concept</span><br>Burl + Paul = 1300 N; rope tensions add to 1700 N. Scaffold weighs…<span class="opts">a) 400 N · b) 500 N · c) 600 N · d) 800 N</span></summary>
+<div class="ans"><p><b>Answer: a.</b> Up = down: 1700 supports painters + scaffold → scaffold = 1700 − 1300 = <b>400 N</b>.</p></div></details>
+
+<details><summary><span class="q">Q18 · Concept</span><br>10-N book on a table — support force is…<span class="opts">a) &lt;10 N · b) 10 N · c) &gt;10 N · d) depends on orientation</span></summary>
+<div class="ans"><p><b>Answer: b.</b> At rest, the table pushes up exactly <b>10 N</b>.</p></div></details>
+
+<details><summary><span class="q">Q19 · Concept</span><br>ΣF = 0 applies to…<span class="opts">a) objects at rest · b) objects in uniform straight-line motion · c) both · d) neither</span></summary>
+<div class="ans"><p><b>Answer: c.</b> <b>Both</b> — "nothing changing" covers rest <i>and</i> constant velocity.</p></div></details>
+
+<details><summary><span class="q">Q20 · Concept</span><br>The net force on any object in equilibrium is…<span class="opts">a) zero · b) 10 m/s² · c) equal to its weight · d) a bit less than weight</span></summary>
+<div class="ans"><p><b>Answer: a.</b> That's the definition — net force = <b>zero</b>.</p></div></details>
+
+<!-- 6 -->
+<h2 id="s6">6 · 🛠️ Worked Examples</h2>
+
+<details class="ex"><summary><span class="q">Example 1 · Equilibrium</span><br>Scales read 700 N and 500 N. Burl weighs 600 N and carries 100 N of paint. <b>What does the scaffold weigh?</b></summary>
+<div class="ans">
+<pre>  700 N ▲                       ▲ 500 N
+        └──[ Burl 600 + paint 100 ]──┘</pre>
+<p>At rest → <b>total up = total down</b>.</p>
+<p>1. Up = 700 + 500 = <b>1200 N</b> → so total weight = 1200 N.<br>
+2. Burl + paint = 700 N.<br>
+3. Scaffold = 1200 − 700 = <b>500 N</b>. ✅</p>
+</div></details>
+
+<details class="ex"><summary><span class="q">Example 2 · Inertia</span><br>A pellet is fired through a flat spiral tube. Leaving the open end, which path: A (keeps curving), B (straight), or C? <i>(ignore gravity)</i></summary>
+<div class="ans">
+<p>Inside, the wall forces it to curve. The instant it exits — no wall, no force — so by the <b>law of inertia</b> it travels in a <b>straight line</b>.</p>
+<p><b>Answer: B</b> — straight line. (A is the classic wrong guess: the pellet doesn't "remember" the curve.)</p>
+</div></details>
+
+<details class="ex"><summary><span class="q">Example 3 · Projectile</span><br>A ball swings on a string; at the lowest point (moving horizontally) a razor cuts the string. Which path next?</summary>
+<div class="ans">
+<p>Split the motion at the cut:</p>
+<p>1. <b>Horizontal:</b> no horizontal force → keeps constant horizontal speed (inertia).<br>
+2. <b>Vertical:</b> gravity pulls it down → it accelerates downward.</p>
+<p>Constant sideways speed + speeding-up fall = a <b>parabola</b>.</p>
+<p><b>Answer: (b)</b> — a parabolic path, like any projectile.</p>
+</div></details>
+
+<details class="ex"><summary><span class="q">Example 4 · Reference frames</span><br>You float down a river. Two life preservers: one 3 m upstream, one 3 m downstream. Swim to which first for the shortest time?</summary>
+<div class="ans">
+<p>You, the water, and both preservers all drift together. Relative to the <i>water</i> it's just like a still pool — both preservers sit 3 m away.</p>
+<p><b>Answer: (c)</b> — both take the same time. The river's motion carries everyone equally and cancels out (same logic as jumping by a wall, Q13).</p>
+</div></details>
+
+<!-- 7 -->
+<h2 id="s7">7 · Cheat sheet</h2>
+<table>
+<tr><th>Idea</th><th>Say it simply</th></tr>
+<tr><td>Inertia</td><td>Matter resists changes in motion. More mass → more inertia.</td></tr>
+<tr><td>Not a force</td><td>Inertia is a property, not a push.</td></tr>
+<tr><td>1st Law</td><td>No net force → rest stays rest, motion stays straight &amp; steady.</td></tr>
+<tr><td>Vector</td><td>Size + direction (velocity, force). Speed is not a vector.</td></tr>
+<tr><td>Net force</td><td>Same way: add. Opposite: subtract (bigger one wins direction).</td></tr>
+<tr><td>Equilibrium</td><td>ΣF = 0 → at rest or constant straight-line velocity.</td></tr>
+<tr><td>Up = Down</td><td>In equilibrium, total upward force = total downward force.</td></tr>
+<tr><td>Remove force</td><td>A curving object flies off straight.</td></tr>
+<tr><td>Projectile</td><td>Constant horizontal + downward gravity = parabola.</td></tr>
+<tr><td>Shared motion</td><td>If everything moves together, you can't feel it / it cancels.</td></tr>
+</table>
+
+<!-- 8 -->
+<h2 id="s8">8 · Answer key</h2>
+<table class="key">
+<tr><th>Q</th><th>Ans</th><th>Key idea</th></tr>
+<tr><td>1</td><td><b>a</b></td><td>No sensation of Earth's motion</td></tr>
+<tr><td>2</td><td><b>b</b></td><td>Experiment over philosophy</td></tr>
+<tr><td>3</td><td><b>b</b></td><td>No friction → keeps rolling</td></tr>
+<tr><td>4</td><td><b>a</b></td><td>Almost original height (friction)</td></tr>
+<tr><td>5</td><td><b>c</b></td><td>Inertia = property of matter</td></tr>
+<tr><td>6</td><td><b>a</b></td><td>Speed has no direction</td></tr>
+<tr><td>7</td><td><b>c</b></td><td>100 − 50 = 50 N left</td></tr>
+<tr><td>8</td><td><b>c</b></td><td>20 − 15 = 5 N east</td></tr>
+<tr><td>9</td><td><b>b</b></td><td>Inertia (dishes stay)</td></tr>
+<tr><td>10</td><td><b>d</b></td><td>Straight-line path</td></tr>
+<tr><td>11</td><td><b>c</b></td><td>Moves with no force acting</td></tr>
+<tr><td>12</td><td><b>b</b></td><td>Cart's back catches the ball</td></tr>
+<tr><td>13</td><td><b>c</b></td><td>Shared horizontal speed</td></tr>
+<tr><td>14</td><td><b>b</b></td><td>5 N per strand</td></tr>
+<tr><td>15</td><td><b>b</b></td><td>Tensions depend on weights</td></tr>
+<tr><td>16</td><td><b>b</b></td><td>Centered → equal tensions</td></tr>
+<tr><td>17</td><td><b>a</b></td><td>1700 − 1300 = 400 N</td></tr>
+<tr><td>18</td><td><b>b</b></td><td>Support force = 10 N</td></tr>
+<tr><td>19</td><td><b>c</b></td><td>Rest and constant velocity</td></tr>
+<tr><td>20</td><td><b>a</b></td><td>Net force = zero</td></tr>
+</table>
+<p><b>Examples:</b> 1 → <b>500 N</b> · 2 → <b>B (straight line)</b> · 3 → <b>(b) parabola</b> · 4 → <b>(c) same time</b></p>
+
+<footer>
+Built from in-class Clicker Questions (concept checks) + Next-Time Questions (worked examples), Chapter 2 — Newton's First Law of Motion: Inertia (Hewitt, Conceptual Physics). Reorganized into one study guide.
+</footer>
+</div>
+<a class="top" href="#top">↑ Top</a>
+</body>
+</html>
