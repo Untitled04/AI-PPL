@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Conceptual Physics — Interactive Quiz</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --card: #1e293b;
+    --card2: #273449;
+    --ink: #e2e8f0;
+    --muted: #94a3b8;
+    --accent: #38bdf8;
+    --accent2: #818cf8;
+    --good: #22c55e;
+    --good-bg: rgba(34, 197, 94, 0.15);
+    --bad: #ef4444;
+    --bad-bg: rgba(239, 68, 68, 0.15);
+    --line: #334155;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+    background: radial-gradient(1200px 600px at 50% -10%, #1e2a4a, var(--bg));
+    color: var(--ink);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 24px 16px 60px;
+  }
+  .wrap { width: 100%; max-width: 760px; }
+
+  header.top { text-align: center; margin-bottom: 22px; }
+  header.top h1 {
+    margin: 0 0 6px;
+    font-size: clamp(1.5rem, 4vw, 2.1rem);
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  header.top p { margin: 0; color: var(--muted); font-size: 0.95rem; }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 26px;
+    box-shadow: 0 20px 40px -20px rgba(0,0,0,0.6);
+  }
+
+  /* ---- Home / chapter picker ---- */
+  .picker { display: grid; gap: 14px; }
+  .chapter-btn {
+    display: flex; align-items: center; gap: 16px;
+    text-align: left;
+    background: var(--card2);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 18px 20px;
+    color: var(--ink);
+    cursor: pointer;
+    transition: transform .12s ease, border-color .12s ease, background .12s ease;
+  }
+  .chapter-btn:hover { transform: translateY(-2px); border-color: var(--accent); background:#2b3b56; }
+  .chapter-btn .emoji { font-size: 2rem; line-height: 1; }
+  .chapter-btn .meta h3 { margin: 0 0 4px; font-size: 1.1rem; }
+  .chapter-btn .meta span { color: var(--muted); font-size: .88rem; }
+  .chapter-btn .count {
+    margin-left: auto; background: var(--bg); color: var(--accent);
+    padding: 4px 10px; border-radius: 999px; font-size: .8rem; white-space: nowrap;
+  }
+
+  /* ---- Quiz ---- */
+  .bar-row { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+  .progress {
+    flex: 1; height: 9px; border-radius: 999px; background: var(--card2); overflow: hidden;
+  }
+  .progress > div {
+    height: 100%; width: 0%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    transition: width .35s ease;
+  }
+  .qcount { font-size: .82rem; color: var(--muted); white-space: nowrap; }
+  .score-pill {
+    font-size: .82rem; color: var(--good); white-space: nowrap;
+    background: var(--good-bg); padding: 3px 10px; border-radius: 999px;
+  }
+
+  .qtext { font-size: 1.18rem; line-height: 1.5; margin: 18px 0 22px; }
+
+  .options { display: grid; gap: 12px; }
+  .opt {
+    display: flex; align-items: center; gap: 12px;
+    background: var(--card2);
+    border: 1.5px solid var(--line);
+    border-radius: 12px;
+    padding: 14px 16px;
+    color: var(--ink);
+    font-size: 1rem;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color .12s, background .12s, transform .08s;
+  }
+  .opt:hover:not(:disabled) { border-color: var(--accent); transform: translateX(2px); }
+  .opt:disabled { cursor: default; }
+  .opt .key {
+    flex: none; width: 28px; height: 28px; border-radius: 8px;
+    display: grid; place-items: center; font-weight: 700; font-size: .9rem;
+    background: var(--bg); color: var(--accent);
+  }
+  .opt.correct { border-color: var(--good); background: var(--good-bg); }
+  .opt.correct .key { background: var(--good); color: #06210f; }
+  .opt.wrong { border-color: var(--bad); background: var(--bad-bg); }
+  .opt.wrong .key { background: var(--bad); color: #2a0606; }
+  .opt .mark { margin-left: auto; font-weight: 700; }
+
+  .explain {
+    margin-top: 18px; padding: 14px 16px; border-radius: 12px;
+    background: var(--bg); border-left: 4px solid var(--accent);
+    font-size: .96rem; line-height: 1.55; color: var(--ink);
+    display: none;
+  }
+  .explain.show { display: block; animation: fade .25s ease; }
+  .explain b { color: var(--accent); }
+  @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; } }
+
+  .footer-row { display: flex; gap: 12px; margin-top: 22px; }
+  .btn {
+    border: none; border-radius: 12px; padding: 13px 22px;
+    font-size: 1rem; font-weight: 600; cursor: pointer;
+    transition: transform .08s, opacity .12s;
+  }
+  .btn:active { transform: scale(.97); }
+  .btn-primary { background: linear-gradient(90deg, var(--accent), var(--accent2)); color: #06121f; }
+  .btn-primary:disabled { opacity: .4; cursor: not-allowed; }
+  .btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--line); }
+  .btn-ghost:hover { color: var(--ink); border-color: var(--accent); }
+  .spacer { flex: 1; }
+
+  /* ---- Results ---- */
+  .result { text-align: center; }
+  .result .big { font-size: 3.2rem; font-weight: 800; margin: 6px 0; }
+  .result .ring {
+    width: 150px; height: 150px; margin: 8px auto 18px; border-radius: 50%;
+    display: grid; place-items: center;
+    background:
+      radial-gradient(closest-side, var(--card) 79%, transparent 80% 100%),
+      conic-gradient(var(--accent) var(--pct, 0%), var(--card2) 0);
+  }
+  .result .ring span { font-size: 1.8rem; font-weight: 800; }
+  .result .msg { color: var(--muted); margin-bottom: 22px; font-size: 1.05rem; }
+  .hint { text-align:center; color: var(--muted); font-size: .8rem; margin-top: 16px; }
+  kbd {
+    background: var(--card2); border: 1px solid var(--line); border-bottom-width: 2px;
+    border-radius: 6px; padding: 1px 7px; font-size: .8rem; color: var(--ink);
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="top">
+      <h1>⚛️ Conceptual Physics — Interactive Quiz</h1>
+      <p>Linear Motion &amp; Newton's Second Law · learn by answering, get instant feedback</p>
+    </header>
+
+    <!-- HOME -->
+    <section id="home" class="card">
+      <div class="picker" id="picker"></div>
+      <p class="hint">Tip: use keys <kbd>1</kbd>–<kbd>4</kbd> or <kbd>A</kbd>–<kbd>D</kbd> to answer, <kbd>Enter</kbd> for next.</p>
+    </section>
+
+    <!-- QUIZ -->
+    <section id="quiz" class="card" style="display:none;">
+      <div class="bar-row">
+        <div class="progress"><div id="progressFill"></div></div>
+        <span class="qcount" id="qcount">1 / 4</span>
+        <span class="score-pill" id="scorePill">0 ✓</span>
+      </div>
+      <div class="qtext" id="qtext"></div>
+      <div class="options" id="options"></div>
+      <div class="explain" id="explain"></div>
+      <div class="footer-row">
+        <button class="btn btn-ghost" id="quitBtn">⤺ Menu</button>
+        <div class="spacer"></div>
+        <button class="btn btn-primary" id="nextBtn" disabled>Next →</button>
+      </div>
+    </section>
+
+    <!-- RESULT -->
+    <section id="result" class="card result" style="display:none;">
+      <div class="ring" id="ring"><span id="ringPct">0%</span></div>
+      <div class="big" id="resScore">0 / 0</div>
+      <div class="msg" id="resMsg"></div>
+      <div class="footer-row" style="justify-content:center;">
+        <button class="btn btn-ghost" id="reviewBtn">↺ Retry this set</button>
+        <button class="btn btn-primary" id="homeBtn">Choose another topic</button>
+      </div>
+    </section>
+  </div>
+
+  <script src="questions.js"></script>
+  <script>
+    const KEYS = ["A", "B", "C", "D"];
+    const $ = (id) => document.getElementById(id);
+
+    // Build the "All chapters mixed" set on the fly.
+    function buildSets() {
+      const sets = { ...QUIZ };
+      const all = [];
+      Object.values(QUIZ).forEach((c) =>
+        c.questions.forEach((q) => all.push(q))
+      );
+      sets.all = {
+        title: "Mixed Challenge — Both Chapters",
+        subtitle: "All questions from Chapters 3 & 4, shuffled",
+        icon: "🎯",
+        questions: all,
+        shuffle: true,
+      };
+      return sets;
+    }
+    const SETS = buildSets();
+
+    let state = null; // { key, questions, idx, score, answered }
+
+    /* ---------- HOME ---------- */
+    function renderHome() {
+      show("home");
+      const picker = $("picker");
+      picker.innerHTML = "";
+      ["ch3", "ch4", "all"].forEach((key) => {
+        const c = SETS[key];
+        const btn = document.createElement("button");
+        btn.className = "chapter-btn";
+        btn.innerHTML = `
+          <span class="emoji">${c.icon}</span>
+          <span class="meta">
+            <h3>${c.title}</h3>
+            <span>${c.subtitle}</span>
+          </span>
+          <span class="count">${c.questions.length} Q</span>`;
+        btn.onclick = () => startQuiz(key);
+        picker.appendChild(btn);
+      });
+    }
+
+    /* ---------- QUIZ ---------- */
+    function startQuiz(key) {
+      const set = SETS[key];
+      let qs = set.questions.map((q) => ({ ...q }));
+      if (set.shuffle) qs = shuffle(qs);
+      state = { key, questions: qs, idx: 0, score: 0, answered: false };
+      show("quiz");
+      renderQuestion();
+    }
+
+    function renderQuestion() {
+      const { questions, idx, score } = state;
+      const q = questions[idx];
+      state.answered = false;
+
+      $("progressFill").style.width = `${(idx / questions.length) * 100}%`;
+      $("qcount").textContent = `${idx + 1} / ${questions.length}`;
+      $("scorePill").textContent = `${score} ✓`;
+      $("qtext").textContent = q.q;
+
+      const box = $("options");
+      box.innerHTML = "";
+      q.options.forEach((opt, i) => {
+        const b = document.createElement("button");
+        b.className = "opt";
+        b.innerHTML = `<span class="key">${KEYS[i]}</span><span>${opt}</span><span class="mark"></span>`;
+        b.onclick = () => choose(i);
+        box.appendChild(b);
+      });
+
+      const ex = $("explain");
+      ex.className = "explain";
+      ex.innerHTML = "";
+
+      const next = $("nextBtn");
+      next.disabled = true;
+      next.textContent = idx === questions.length - 1 ? "See results →" : "Next →";
+    }
+
+    function choose(i) {
+      if (state.answered) return;
+      state.answered = true;
+      const q = state.questions[state.idx];
+      const opts = document.querySelectorAll(".opt");
+
+      opts.forEach((o, j) => {
+        o.disabled = true;
+        const mark = o.querySelector(".mark");
+        if (j === q.answer) {
+          o.classList.add("correct");
+          mark.textContent = "✓";
+        }
+        if (j === i && i !== q.answer) {
+          o.classList.add("wrong");
+          mark.textContent = "✗";
+        }
+      });
+
+      const correct = i === q.answer;
+      if (correct) state.score++;
+      $("scorePill").textContent = `${state.score} ✓`;
+
+      const ex = $("explain");
+      ex.innerHTML =
+        (correct ? "<b>Correct! </b>" : `<b>Not quite — the answer is ${KEYS[q.answer]}. </b>`) +
+        q.explain;
+      ex.classList.add("show");
+
+      $("nextBtn").disabled = false;
+    }
+
+    function next() {
+      if (!state.answered) return;
+      if (state.idx < state.questions.length - 1) {
+        state.idx++;
+        renderQuestion();
+      } else {
+        renderResult();
+      }
+    }
+
+    /* ---------- RESULT ---------- */
+    function renderResult() {
+      show("result");
+      const { score, questions } = state;
+      const total = questions.length;
+      const pct = Math.round((score / total) * 100);
+      $("ring").style.setProperty("--pct", pct + "%");
+      $("ringPct").textContent = pct + "%";
+      $("resScore").textContent = `${score} / ${total}`;
+      let msg;
+      if (pct === 100) msg = "Perfect score! You've mastered these concepts. 🏆";
+      else if (pct >= 75) msg = "Great work — strong grasp of the physics. 💪";
+      else if (pct >= 50) msg = "Good effort! Review the explanations and try again. 📘";
+      else msg = "Keep going — read each explanation, then retry. You'll get it! 🚀";
+      $("resMsg").textContent = msg;
+    }
+
+    /* ---------- helpers ---------- */
+    function show(which) {
+      ["home", "quiz", "result"].forEach((id) => {
+        $(id).style.display = id === which ? "" : "none";
+      });
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+    function shuffle(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    /* ---------- wiring ---------- */
+    $("nextBtn").onclick = next;
+    $("quitBtn").onclick = renderHome;
+    $("homeBtn").onclick = renderHome;
+    $("reviewBtn").onclick = () => startQuiz(state.key);
+
+    document.addEventListener("keydown", (e) => {
+      if ($("quiz").style.display === "none") return;
+      const k = e.key.toUpperCase();
+      if (!state.answered) {
+        let idx = -1;
+        if (["1", "2", "3", "4"].includes(e.key)) idx = +e.key - 1;
+        else if (KEYS.includes(k)) idx = KEYS.indexOf(k);
+        const q = state.questions[state.idx];
+        if (idx >= 0 && idx < q.options.length) { e.preventDefault(); choose(idx); }
+      } else if (e.key === "Enter") {
+        e.preventDefault(); next();
+      }
+    });
+
+    renderHome();
+  </script>
+</body>
+</html>
