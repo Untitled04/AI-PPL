@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دفتر الديون الرقمي - DaftarPay</title>
+    <!-- خط القاهرة العربي الفخم -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS للمظهر الاحترافي -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- مكتبة الأيقونات الشهيرة والموثوقة -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Cairo', 'sans-serif'],
+                    },
+                    colors: {
+                        slate: {
+                            850: '#1e293b',
+                            950: '#020617',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        /* إخفاء شريط التمرير الافتراضي وتجميله */
+        .scrollbar-thin::-webkit-scrollbar {
+            width: 4px;
+        }
+        .scrollbar-thin::-webkit-scrollbar-track {
+            background: #020617;
+        }
+        .scrollbar-thin::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col overflow-x-hidden">
+
+    <!-- شريط الرأس العلوي -->
+    <header class="border-b border-slate-900 bg-slate-950/80 sticky top-0 z-45 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-emerald-400 flex items-center justify-center shadow-lg shadow-emerald-950/35">
+                    <i class="fa-solid fa-book-open text-slate-950 text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="text-base font-black tracking-tight flex items-center gap-2">
+                        دفتر الديون الذكي <span class="text-xs font-bold bg-slate-900 text-emerald-400 px-2 py-0.5 rounded-full">DaftarPay</span>
+                    </h1>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <button onclick="openModal('cloudModal')" class="p-2 text-emerald-400 hover:text-emerald-300 bg-slate-900/60 hover:bg-slate-900 rounded-lg transition-colors flex items-center gap-1.5 text-xs font-bold animate-pulse">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                    <span>حفظ احتياطي</span>
+                </button>
+                <button onclick="openModal('helpModal')" class="p-2 text-slate-400 hover:text-slate-100 bg-slate-900 hover:bg-slate-800 rounded-lg transition-colors flex items-center gap-1 text-xs font-medium">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <span class="hidden sm:inline">دليل الأمان</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- واجهة المحتوى الرئيسي -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 space-y-6">
+
+        <!-- لوحة بطاقات الإحصائيات الفورية -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- بطاقة 1 -->
+            <div class="bg-slate-900 p-5 rounded-2xl border border-slate-850 flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-semibold text-slate-400">إجمالي الديون بذمة الزبائن</p>
+                    <p id="totalOutstanding" class="text-2xl font-black mt-1 text-rose-400 font-mono">0 <span class="text-xs font-normal text-slate-500">د.ع</span></p>
+                </div>
+                <div class="p-3 bg-rose-950/30 rounded-xl border border-rose-900/30">
+                    <i class="fa-solid fa-arrow-trend-up text-rose-400 text-xl"></i>
+                </div>
+            </div>
+            <!-- بطاقة 2 -->
+            <div class="bg-slate-900 p-5 rounded-2xl border border-slate-850 flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-semibold text-slate-400">إجمالي المبالغ المحصلة</p>
+                    <p id="totalCollected" class="text-2xl font-black mt-1 text-emerald-400 font-mono">0 <span class="text-xs font-normal text-emerald-500">د.ع</span></p>
+                </div>
+                <div class="p-3 bg-emerald-950/30 rounded-xl border border-emerald-900/30">
+                    <i class="fa-solid fa-circle-check text-emerald-400 text-xl"></i>
+                </div>
+            </div>
+            <!-- بطاقة 3 -->
+            <div class="bg-slate-900 p-5 rounded-2xl border border-slate-850 flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-semibold text-slate-400">الزبائن المسجلين</p>
+                    <p id="totalCustomersCount" class="text-2xl font-black mt-1 text-blue-400 font-mono">0 <span class="text-xs font-normal text-slate-500">حسابات</span></p>
+                </div>
+                <div class="p-3 bg-blue-950/30 rounded-xl border border-blue-900/30">
+                    <i class="fa-solid fa-users text-blue-400 text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- ساحة العمل المنقسمة -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+            <!-- الجانب الأيمن: قائمة الزبائن والبحث -->
+            <div class="lg:col-span-5 bg-slate-900 rounded-2xl border border-slate-850 p-4 flex flex-col h-[580px]">
+                <div class="mb-4 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-sm font-bold flex items-center gap-2 text-slate-200">
+                            <i class="fa-solid fa-id-card text-emerald-400"></i>
+                            <span>قائمة عملاء المتجر</span>
+                        </h2>
+                        <button onclick="openModal('newCustModal')" class="text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-3 py-2 rounded-xl flex items-center gap-1.5 transition-all">
+                            <i class="fa-solid fa-user-plus"></i>
+                            <span>إضافة زبون</span>
+                        </button>
+                    </div>
+
+                    <!-- حقل البحث الذكي -->
+                    <div class="relative">
+                        <input id="searchInput" type="text" onkeyup="filterCustomers()" placeholder="ابحث باسم الزبون أو رقم الهاتف..." class="w-full bg-slate-950 border border-slate-850 rounded-xl py-2.5 pr-10 pl-4 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-emerald-500 text-right">
+                        <i class="fa-solid fa-magnifying-glass text-slate-500 absolute right-3.5 top-3.5 text-xs"></i>
+                    </div>
+                </div>
+
+                <!-- قائمة الزبائن التفاعلية -->
+                <div id="customerListContainer" class="flex-1 overflow-y-auto space-y-2 pr-0.5 scrollbar-thin">
+                    <!-- يتم بناؤها ديناميكياً بواسطة الجافاسكريبت لتجنب الأخطاء -->
+                </div>
+
+                <!-- شريط الحالة والسحاب -->
+                <div class="mt-3 pt-3 border-t border-slate-850 flex items-center justify-between text-[10px] text-slate-500">
+                    <span class="flex items-center gap-1">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span>وضع الذاكرة: <b id="storageModeText">محلي آمن</b></span>
+                    </span>
+                    <span>يعمل بدون إنترنت بالكامل</span>
+                </div>
+            </div>
+
+            <!-- الجانب الأيسر: الملف المالي وكشف الحساب التفصيلي -->
+            <div id="ledgerContainer" class="lg:col-span-7 bg-slate-900 rounded-2xl border border-slate-850 p-5 flex flex-col h-[580px]">
+                <!-- كشف الحساب التفاعلي يبنى ديناميكياً هنا -->
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- ================= النوافذ المنبثقة التفاعلية (Modals) ================= -->
+
+    <!-- نافذة 1: تسجيل معاملة جديدة (دين / تسديد) -->
+    <div id="logTxModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-850 w-full max-w-md rounded-2xl p-6 relative text-right animate-slide-up">
+            <button onclick="closeModal('logTxModal')" class="absolute left-4 top-4 text-slate-400 hover:text-white p-1 rounded-lg">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <div class="mb-4">
+                <span class="text-xs text-emerald-400 font-bold">الحسابات الفورية</span>
+                <h3 id="logModalTitle" class="text-base font-bold text-white mt-0.5">تسجيل قيد مالي جديد</h3>
+            </div>
+            <form onsubmit="saveTransaction(event)" class="space-y-4">
+                <input type="hidden" id="logTypeInput" value="debt">
+
+                <div class="grid grid-cols-2 gap-2 bg-slate-950 p-1 rounded-xl border border-slate-850">
+                    <button type="button" id="tabDebt" onclick="setLogType('debt')" class="py-2 rounded-lg text-xs font-bold transition-all bg-rose-950 text-rose-300 border border-rose-800/40">
+                        دين جديد (+)
+                    </button>
+                    <button type="button" id="tabCredit" onclick="setLogType('credit')" class="py-2 rounded-lg text-xs font-bold transition-all text-slate-400">
+                        تسديد دفعة (-)
+                    </button>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 mb-1.5">الزبون المستهدف</label>
+                    <select id="logCustomerSelect" class="w-full bg-slate-950 border border-slate-850 rounded-xl py-2 px-3 text-xs text-slate-200 focus:outline-none" required>
+                        <!-- خيارات الزبائن ديناميكية -->
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 mb-1.5">المبلغ المطلوب (بالدينار العراقي)</label>
+                    <div class="relative">
+                        <input id="logAmountInput" type="number" placeholder="مثال: 25000" class="w-full bg-slate-950 border border-slate-850 rounded-xl py-2.5 pr-3 pl-12 text-xs text-slate-200 focus:outline-none font-mono text-right" required min="250">
+                        <span class="absolute left-3.5 top-3 text-[10px] text-slate-500 font-bold">د.ع</span>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 mb-1.5">تفاصيل السلعة أو الخدمة (اختياري)</label>
+                    <input id="logNoteInput" type="text" placeholder="مثال: شراء ملابس، تسديد نقدي يدوي" class="w-full bg-slate-950 border border-slate-850 rounded-xl py-2.5 px-3.5 text-xs text-slate-200 focus:outline-none text-right">
+                </div>
+
+                <button type="submit" class="w-full py-3 rounded-xl text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950 transition-all">
+                    تأكيد وحفظ القيد بالدفتر
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- نافذة 2: إضافة زبون جديد -->
+    <div id="newCustModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-2xl p-6 relative text-right">
+            <button onclick="closeModal('newCustModal')" class="absolute left-4 top-4 text-slate-400 hover:text-white p-1 rounded-lg">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <div class="mb-4">
+                <span class="text-xs text-emerald-400 font-bold">إعداد الحسابات</span>
+                <h3 class="text-base font-bold text-white mt-0.5">تسجيل عميل جديد</h3>
+            </div>
+            <form onsubmit="addNewCustomer(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 mb-1.5">الاسم الثلاثي للزبون</label>
+                    <input id="custNameInput" type="text" placeholder="مثال: محمد جاسم الفتلاوي" class="w-full bg-slate-950 border border-slate-850 rounded-xl py-2.5 px-3.5 text-xs text-slate-200 focus:outline-none text-right" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 mb-1.5">رقم الهاتف (للتواصل والتذكير)</label>
+                    <input id="custPhoneInput" type="text" placeholder="مثال: 07701234567" class="w-full bg-slate-950 border border-slate-850 rounded-xl py-2.5 px-3.5 text-xs text-slate-200 focus:outline-none font-mono text-left" dir="ltr" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 mb-1.5">تصنيف العميل</label>
+                    <select id="custTagSelect" class="w-full bg-slate-950 border border-slate-850 rounded-xl py-2 px-3 text-xs text-slate-200 focus:outline-none">
+                        <option value="عادي">عادي / طبيعي</option>
+                        <option value="مميز">⭐ مميز / ثقة</option>
+                        <option value="متأخر">⚠️ متأخر / يحتاج تذكير مستمر</option>
+                    </select>
+                </div>
+                <button type="submit" class="w-full py-3 rounded-xl text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950 transition-all">
+                    إدراج العميل بالدفتر
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- نافذة 3: تأكيد تصفير البيانات -->
+    <div id="resetModal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border-2 border-rose-900/40 w-full max-w-sm rounded-2xl p-6 relative text-right shadow-2xl">
+            <div class="text-rose-500 text-center mb-3">
+                <i class="fa-solid fa-triangle-exclamation text-4xl"></i>
+            </div>
+            <h3 class="text-base font-black text-white text-center mb-2">هل أنت متأكد من مسح البيانات بالكامل؟</h3>
+            <p class="text-xs text-slate-400 text-center leading-relaxed mb-6">
+                سيقوم هذا الإجراء بمسح جميع الزبائن الحاليين والمعاملات المالية المسجلة نهائياً من ذاكرة هذا الهاتف، ولن تتمكن من تراجع عنها.
+            </p>
+            <div class="grid grid-cols-2 gap-3">
+                <button onclick="confirmReset()" class="py-2.5 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-bold transition-colors">
+                    نعم، مسح كلي
+                </button>
+                <button onclick="closeModal('resetModal')" class="py-2.5 bg-slate-800 hover:bg-slate-750 text-slate-250 rounded-xl text-xs font-bold transition-colors">
+                    إلغاء التراجع
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة 4: تذكير بحفظ السحاب والترقية -->
+    <div id="cloudModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-2xl p-6 relative text-right">
+            <button onclick="closeModal('cloudModal')" class="absolute left-4 top-4 text-slate-400 hover:text-white p-1 rounded-lg">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <div class="mb-4 text-center">
+                <div class="w-12 h-12 rounded-full bg-emerald-950 text-emerald-400 flex items-center justify-center mx-auto mb-3 border border-emerald-900/55 animate-bounce">
+                    <i class="fa-solid fa-cloud-arrow-up text-xl"></i>
+                </div>
+                <h3 class="text-base font-black text-white">ترغب بحفظ سجلاتك والوصول لها من أي مكان؟</h3>
+                <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+                    جميع بيانات زبائنك محفوظة ومؤمنة في هذا الهاتف حالياً. يمكنك قريباً ربط الدفتر بالإنترنت لتتمكن من الوصول لجميع زبائنك من جهاز الكمبيوتر أو هاتف آخر في نفس الوقت!
+                </p>
+            </div>
+            <div class="space-y-2 mb-4">
+                <div class="bg-slate-950 p-3 rounded-xl border border-slate-850 flex items-center gap-3">
+                    <i class="fa-solid fa-mobile-screen-button text-emerald-400"></i>
+                    <span class="text-xs text-slate-300">مزامنة فورية ودقيقة عبر الأجهزة المفتوحة بالمحل</span>
+                </div>
+                <div class="bg-slate-950 p-3 rounded-xl border border-slate-850 flex items-center gap-3">
+                    <i class="fa-solid fa-shield-halved text-emerald-400"></i>
+                    <span class="text-xs text-slate-300">حماية فائقة لدفاتر الديون من التلف والضياع الفجائي</span>
+                </div>
+            </div>
+            <button onclick="alertNotification('شكرًا لاهتمامك! تم إضافتك لقائمة الانتظار بنجاح.'); closeModal('cloudModal');" class="w-full py-3 rounded-xl text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950">
+                تسجيل اهتمامك بالخدمة السحابية
+              </button>
+        </div>
+    </div>
+
+    <!-- نافذة 5: دليل الأمان والخصوصية -->
+    <div id="helpModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 w-full max-w-lg rounded-2xl p-6 relative text-right">
+            <button onclick="closeModal('helpModal')" class="absolute left-4 top-4 text-slate-400 hover:text-white p-1 rounded-lg">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <div class="mb-4 border-b border-slate-800 pb-3">
+                <span class="text-xs text-emerald-400 font-bold">حماية دفاتر المتجر</span>
+                <h3 class="text-base font-black text-white mt-0.5">آلية عمل النظام والخصوصية الآمنة</h3>
+            </div>
+            <div class="space-y-4 text-xs text-slate-300 leading-relaxed">
+                <p>
+                    <b>حفظ فوري آمن ومستمر:</b> يتم تخزين زبائنك ومعاملاتهم المالية بشكل لحظي داخل مساحة الذاكرة الآمنة الخاصة بمتصفحك. هذا يعني أنه يمكنك إغلاق التطبيق أو تصفح مواقع أخرى والعودة لتجد بياناتك كما تركتها تماماً.
+                </p>
+                <p>
+                    <b>العمل المستقل وبدون قيود:</b> يعمل التطبيق بشكل مستقل وبدون الحاجة لإنترنت لعرض أو تعديل السجلات، مما يجعله آمناً وصالحاً للعمل تحت أي ظروف حظر أمني أو انقطاع شبكي.
+                </p>
+                <p class="text-rose-400 font-semibold">
+                    ⚠️ تذكير أمني: نوصي بعدم مسح بيانات المتصفح العميقة للحفاظ على زبائنك، وسيتم تزويدك قريباً بخيار النسخ السحابي الاحتياطي لحماية بياناتك من الحذف بالخطأ.
+                </p>
+            </div>
+            <div class="mt-6 pt-4 border-t border-slate-800 flex justify-end">
+                <button onclick="closeModal('helpModal')" class="bg-slate-800 hover:bg-slate-700 text-slate-100 px-4 py-2 rounded-lg text-xs font-bold">
+                    العودة للوحة القيود
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- التنبيه العائم السريع السفلي -->
+    <div id="toastNotification" class="fixed bottom-6 right-6 left-6 md:left-auto md:right-6 z-50 flex items-center gap-3 px-5 py-4 rounded-xl shadow-lg border hidden transition-all duration-300 max-w-md">
+        <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
+        <span id="toastMessage" class="text-xs font-bold">تمت العملية بنجاح!</span>
+    </div>
+
+    <!-- زر عائم سفلي لتسجيل القيود بسرعة فائقة -->
+    <div class="fixed bottom-6 left-6 z-40">
+        <button onclick="openLogTxWithSelected()" class="w-14 h-14 rounded-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 flex items-center justify-center shadow-2xl shadow-emerald-500/25 transition-all hover:scale-110 active:scale-95 group relative">
+            <i class="fa-solid fa-plus text-xl font-bold"></i>
+            <span class="absolute left-16 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-xl text-xs font-bold text-emerald-400 shadow-md opacity-0 group-hover:opacity-100 transition-all pointer-events-none whitespace-nowrap">
+                تسجيل قيد سريع بالدفتر
+            </span>
+        </button>
+    </div>
+
+    <!-- الاحتفال بتصفية الديون -->
+    <div id="celebrationOverlay" class="fixed inset-0 pointer-events-none z-50 flex items-center justify-center hidden">
+        <div class="absolute inset-0 bg-emerald-500/10 backdrop-blur-xs"></div>
+        <div class="bg-slate-900 border border-emerald-500/30 px-8 py-6 rounded-2xl shadow-2xl flex flex-col items-center text-center animate-bounce">
+            <span class="text-5xl mb-2">🥳</span>
+            <h3 class="text-lg font-bold text-emerald-400">تم تصفية الحساب بالكامل!</h3>
+            <p class="text-xs text-slate-400 mt-1">دفتر ذمم هذا الزبون نظيف وخالٍ من الديون</p>
+        </div>
+    </div>
+
+    <!-- ================= محرك الجافاسكريبت فائق القوة والمقاوم للانهيار ================= -->
+    <script>
+        // الذاكرة المؤقتة الذاتية عند تعذر الوصول لـ localStorage بسبب قيود الإطارات
+        let memoryStore = {};
+        const safeStorage = {
+            getItem: (key) => {
+                try {
+                    return localStorage.getItem(key);
+                } catch (e) {
+                    return memoryStore[key] || null;
+                }
+            },
+            setItem: (key, value) => {
+                try {
+                    localStorage.setItem(key, value);
+                } catch (e) {
+                    memoryStore[key] = value;
+                }
+            }
+        };
+
+        // تبيين وضع التخزين للمستخدم
+        try {
+            localStorage.setItem('__test_access', '1');
+            localStorage.removeItem('__test_access');
+        } catch(e) {
+            document.getElementById('storageModeText').innerText = "مؤقت (آمن)";
+            document.getElementById('storageModeText').classList.add('text-amber-400');
+        }
+
+        // البيانات الأولية الافتراضية
+        const DEFAULT_CUSTOMERS = [
+            {
+                id: 'c1',
+                name: 'أحمد المنصور',
+                phone: '07701234567',
+                tag: 'مميز',
+                balance: 450000,
+                lastActive: '2026-06-25',
+                history: [
+                    { id: 't1', type: 'debt', amount: 300000, date: '2026-06-10', note: 'شراء قماش بدلة رجالية' },
+                    { id: 't2', type: 'debt', amount: 200000, date: '2026-06-15', note: 'حذاء جلدي إيطالي' },
+                    { id: 't3', type: 'credit', amount: 50000, date: '2026-06-25', note: 'دفعة نقدية جزئية' },
+                ]
+            },
+            {
+                id: 'c2',
+                name: 'مريم كواس',
+                phone: '07809876543',
+                tag: 'متأخر',
+                balance: 850000,
+                lastActive: '2026-05-12',
+                history: [
+                    { id: 't4', type: 'debt', amount: 850000, date: '2026-05-12', note: 'تجهيز مواد غذائية للمنزل' }
+                ]
+            }
+        ];
+
+        let customers = [];
+        let selectedCustomerId = null;
+
+        // تحميل البيانات من الذاكرة الآمنة عند بدء التشغيل
+        function initApp() {
+            try {
+                const saved = safeStorage.getItem('daftar_pay_customers');
+                if (saved) {
+                    customers = JSON.parse(saved);
+                } else {
+                    customers = DEFAULT_CUSTOMERS;
+                }
+            } catch (e) {
+                customers = DEFAULT_CUSTOMERS;
+            }
+
+            if (customers.length > 0) {
+                selectedCustomerId = customers[0].id;
+            }
+            updateUI();
+        }
+
+        // حفظ التغييرات في الذاكرة
+        function saveToStorage() {
+            try {
+                safeStorage.setItem('daftar_pay_customers', JSON.stringify(customers));
+            } catch (e) {}
+        }
+
+        // دالة عرض التنبيهات السريعة بديلة alert() المرفوضة في iFrames
+        function alertNotification(message, type = 'success') {
+            const toast = document.getElementById('toastNotification');
+            const toastMsg = document.getElementById('toastMessage');
+            const toastIcon = document.getElementById('toastIcon');
+
+            toastMsg.innerText = message;
+            if (type === 'error') {
+                toast.className = "fixed bottom-6 right-6 left-6 md:left-auto md:right-6 z-50 flex items-center gap-3 px-5 py-4 rounded-xl shadow-lg border bg-rose-950/90 border-rose-800 text-rose-200 transition-all duration-300";
+                toastIcon.className = "fa-solid fa-circle-exclamation text-rose-400 text-lg";
+            } else {
+                toast.className = "fixed bottom-6 right-6 left-6 md:left-auto md:right-6 z-50 flex items-center gap-3 px-5 py-4 rounded-xl shadow-lg border bg-emerald-950/90 border-emerald-800 text-emerald-200 transition-all duration-300";
+                toastIcon.className = "fa-solid fa-circle-check text-emerald-400 text-lg";
+            }
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3500);
+        }
+
+        // تحديث جميع عناصر الواجهة والعمليات الحسابية بشكل آمن
+        function updateUI() {
+            // احتساب الإحصائيات
+            let totalOutstanding = 0;
+            let totalCollected = 0;
+
+            customers.forEach(cust => {
+                totalOutstanding += (cust.balance || 0);
+                (cust.history || []).forEach(t => {
+                    if (t.type === 'credit') {
+                        totalCollected += (t.amount || 0);
+                    }
+                });
+            });
+
+            document.getElementById('totalOutstanding').innerHTML = `${totalOutstanding.toLocaleString()} <span class="text-xs font-normal text-slate-500">د.ع</span>`;
+            document.getElementById('totalCollected').innerHTML = `${totalCollected.toLocaleString()} <span class="text-xs font-normal text-emerald-500">د.ع</span>`;
+            document.getElementById('totalCustomersCount').innerHTML = `${customers.length} <span class="text-xs font-normal text-slate-500">زبائن</span>`;
+
+            // رندر قائمة العملاء
+            renderCustomerList();
+
+            // رندر كشف الحساب الحالي
+            renderLedgerDetail();
+        }
+
+        // بناء قائمة العملاء
+        function renderCustomerList() {
+            const listContainer = document.getElementById('customerListContainer');
+            listContainer.innerHTML = '';
+
+            const query = document.getElementById('searchInput').value.trim();
+            const filtered = customers.filter(cust => {
+                return (cust.name || '').includes(query) || (cust.phone || '').includes(query);
+            });
+
+            if (filtered.length === 0) {
+                listContainer.innerHTML = `
+                    <div class="flex flex-col items-center justify-center py-20 text-slate-600">
+                        <i class="fa-solid fa-users-slash text-3xl mb-2"></i>
+                        <p class="text-xs">لم نجد زبون يطابق بحثك</p>
+                    </div>
+                `;
+                return;
+            }
+
+            filtered.forEach(cust => {
+                const isSelected = cust.id === selectedCustomerId;
+                const balanceVal = cust.balance || 0;
+                let tagHtml = '';
+                if (cust.tag === 'مميز') {
+                    tagHtml = `<span class="text-[9px] bg-indigo-950 text-indigo-300 px-1.5 py-0.5 rounded-md font-bold">مميز</span>`;
+                } else if (cust.tag === 'متأخر') {
+                    tagHtml = `<span class="text-[9px] bg-rose-950 text-rose-300 px-1.5 py-0.5 rounded-md font-bold">متأخر</span>`;
+                }
+
+                const item = document.createElement('div');
+                item.onclick = () => selectCustomer(cust.id);
+                item.className = `p-3 rounded-xl border transition-all cursor-pointer relative flex items-center justify-between ${
+                    isSelected
+                        ? 'bg-slate-850 border-emerald-500/40 shadow-sm shadow-emerald-950/10'
+                        : 'bg-slate-950 border-slate-850 hover:border-slate-800'
+                }`;
+
+                item.innerHTML = `
+                    ${isSelected ? `<div class="absolute right-0 top-3 bottom-3 w-1 rounded-l bg-emerald-500"></div>` : ''}
+                    <div class="flex flex-col min-w-0 pl-2">
+                        <h3 class="font-bold text-sm text-slate-200 truncate">${cust.name}</h3>
+                        <p class="text-[11px] text-slate-500 font-mono flex items-center gap-1 mt-0.5">
+                            <i class="fa-solid fa-phone text-[9px]"></i> ${cust.phone}
+                        </p>
+                    </div>
+                    <div class="text-left flex flex-col items-end flex-shrink-0">
+                        <div class="flex items-center gap-1 mb-1">${tagHtml}</div>
+                        <p class="text-xs font-black font-mono ${balanceVal > 0 ? 'text-rose-400' : 'text-emerald-400'}">
+                            ${balanceVal > 0 ? `${balanceVal.toLocaleString()} د.ع` : 'خالي'}
+                        </p>
+                    </div>
+                `;
+                listContainer.appendChild(item);
+            });
+        }
+
+        // اختيار عميل وعرضه في الشاشة اليسرى
+        function selectCustomer(id) {
+            selectedCustomerId = id;
+            updateUI();
+        }
+
+        // بناء كشف حساب وتفاصيل الزبون المختار بالكامل
+        function renderLedgerDetail() {
+            const container = document.getElementById('ledgerContainer');
+            const activeCust = customers.find(c => c.id === selectedCustomerId);
+
+            if (!activeCust) {
+                container.innerHTML = `
+                    <div class="flex flex-col items-center justify-center h-full text-slate-600">
+                        <i class="fa-solid fa-user-tag text-4xl mb-3"></i>
+                        <p class="text-xs">قم باختيار أو إضافة زبون لعرض تفاصيل حسابه</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const balanceVal = activeCust.balance || 0;
+            const waLink = getWhatsAppLink(activeCust);
+
+            // بناء كشف العمليات بالتسلسل الزمني
+            let historyHtml = '';
+            const historyList = activeCust.history || [];
+            if (historyList.length > 0) {
+                historyList.forEach(tx => {
+                    const isDebt = tx.type === 'debt';
+                    historyHtml += `
+                        <div class="relative pr-5 border-r border-slate-800 pb-2">
+                            <div class="absolute -right-1.5 top-2.5 w-3 h-3 rounded-full border-2 ${isDebt ? 'bg-rose-500 border-slate-900' : 'bg-emerald-500 border-slate-900'}"></div>
+                            <div class="bg-slate-950 p-3 rounded-xl border border-slate-850 flex items-center justify-between">
+                                <div>
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <span class="text-[9px] font-bold px-2 py-0.5 rounded-md ${isDebt ? 'bg-rose-950 text-rose-300' : 'bg-emerald-950 text-emerald-300'}">
+                                            ${isDebt ? 'دين جديد' : 'تسديد دفعة'}
+                                        </span>
+                                        <span class="text-[9px] text-slate-500 font-mono"><i class="fa-solid fa-calendar"></i> ${tx.date}</span>
+                                    </div>
+                                    <p class="text-xs font-semibold text-slate-300">${tx.note}</p>
+                                </div>
+                                <p class="text-sm font-black font-mono ${isDebt ? 'text-rose-400' : 'text-emerald-400'}">
+                                    ${isDebt ? '+' : '-'} ${tx.amount.toLocaleString()} د.ع
+                                </p>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                historyHtml = `
+                    <div class="flex flex-col items-center justify-center py-20 text-slate-600">
+                        <i class="fa-solid fa-circle-check text-emerald-500 text-3xl mb-2 animate-pulse"></i>
+                        <p class="text-xs">الحساب نظيف بالكامل ولا يوجد ديون بذمته</p>
+                    </div>
+                `;
+            }
+
+            container.innerHTML = `
+                <div class="flex flex-col h-full">
+                    <!-- معلومات الزبون الأساسية -->
+                    <div class="border-b border-slate-850 pb-4">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-11 h-11 rounded-lg bg-slate-800 border border-slate-750 flex items-center justify-center font-bold text-base text-emerald-400">
+                                    ${activeCust.name ? activeCust.name.charAt(0) : ''}
+                                </div>
+                                <div>
+                                    <h2 class="text-base font-bold text-white">${activeCust.name}</h2>
+                                    <p class="text-xs text-slate-400 flex items-center gap-2 mt-0.5 font-mono">
+                                        <span>${activeCust.phone}</span>
+                                        <span class="w-1 h-1 rounded-full bg-slate-700"></span>
+                                        <span>النشاط: ${activeCust.lastActive}</span>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="flex">
+                                <a href="${waLink}" target="_blank" onclick="alertNotification('جاري تحويلك لـ WhatsApp لإرسال التنبيه الودي...')" class="bg-emerald-950 hover:bg-emerald-900 hover:text-emerald-300 text-emerald-400 px-4 py-2 rounded-xl text-xs font-bold border border-emerald-900/40 flex items-center gap-2 transition-all w-full sm:w-auto justify-center">
+                                    <i class="fa-brands fa-whatsapp text-sm"></i>
+                                    <span>تذكير ودي عبر واتساب</span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- كرت كشف الرصيد الحالي للزبون المفتوح -->
+                        <div class="mt-4 p-4 rounded-xl bg-slate-950 border border-slate-850 flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-semibold text-slate-400">الرصيد المتبقي بذمته</p>
+                                <h3 class="text-xl font-black font-mono mt-0.5 ${balanceVal > 0 ? 'text-rose-400' : 'text-emerald-400'}">
+                                    ${balanceVal.toLocaleString()} <span class="text-xs text-slate-500 font-normal">د.ع</span>
+                                </h3>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="openLogTransaction('credit')" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-3.5 py-2 rounded-lg text-xs font-black flex items-center gap-1.5 transition-all shadow-md">
+                                    <i class="fa-solid fa-arrow-down-left"></i>
+                                    <span>تسديد دفعة</span>
+                                </button>
+                                <button onclick="openLogTransaction('debt')" class="bg-slate-850 hover:bg-slate-800 text-slate-300 px-3.5 py-2 rounded-lg text-xs font-black flex items-center gap-1.5 transition-all">
+                                    <i class="fa-solid fa-arrow-up-right"></i>
+                                    <span>بيع بالآجل</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- السجل الزمني للتاريخ المالي للزبون -->
+                    <div class="flex-1 overflow-y-auto space-y-3 pt-3 pr-0.5 scrollbar-thin">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-[10px] font-bold text-slate-400">تفاصيل كشف العمليات المتبقية</span>
+                            <span class="text-[10px] text-slate-500"><i class="fa-solid fa-clock-rotate-left"></i> محدث</span>
+                        </div>
+                        <div class="space-y-3">
+                            ${historyHtml}
+                        </div>
+                    </div>
+
+                    <!-- خيار إعادة التهيئة الموثوق وبديل confirm -->
+                    <div class="mt-3 pt-3 border-t border-slate-850 flex justify-between items-center text-[11px] text-slate-500">
+                        <button onclick="openModal('resetModal')" class="text-rose-400 hover:text-rose-300 flex items-center gap-1 transition-colors">
+                            <i class="fa-solid fa-trash-can"></i>
+                            <span>تصفير الدفتر وإعادة التهيئة</span>
+                        </button>
+                        <span class="font-mono text-[9px] text-slate-600">نظام دفتري المستقر كلياً</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        // إيجاد رابط الواتساب الجاهز
+        function getWhatsAppLink(customer) {
+            const balanceVal = customer.balance || 0;
+            const text = `السلام عليكم أستاذ ${customer.name}. تذكير ودي ولطيف من محلنا: الرصيد المتبقي بذمتكم هو ${balanceVal.toLocaleString()} د.ع. نسعد دائماً بتعاملكم معنا وبإمكانكم التسديد في زيارتكم القادمة. شكراً لكم وبوركت أوقاتكم! ✨`;
+            return `https://wa.me/${customer.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(text)}`;
+        }
+
+        // فتح وإغلاق النوافذ المنبثقة
+        function openModal(id) {
+            document.getElementById(id).classList.remove('hidden');
+            document.getElementById(id).classList.add('flex');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+            document.getElementById(id).classList.remove('flex');
+        }
+
+        // فتح نافذة المعاملات لزبون معين أو العميل الحالي المفتوح
+        function openLogTransaction(type) {
+            setLogType(type);
+
+            // تحديث سيليكت العملاء ليتوافق
+            const select = document.getElementById('logCustomerSelect');
+            select.innerHTML = '';
+            customers.forEach(c => {
+                const option = document.createElement('option');
+                option.value = c.id;
+                option.text = `${c.name} - رصيده: ${(c.balance || 0).toLocaleString()} د.ع`;
+                if (c.id === selectedCustomerId) {
+                    option.selected = true;
+                }
+                select.appendChild(option);
+            });
+
+            openModal('logTxModal');
+        }
+
+        function openLogTxWithSelected() {
+            openLogTransaction('debt');
+        }
+
+        // تعيين نوع المعاملة في المودال وتحديث ستايل التبويبات
+        function setLogType(type) {
+            document.getElementById('logTypeInput').value = type;
+            const tabDebt = document.getElementById('tabDebt');
+            const tabCredit = document.getElementById('tabCredit');
+            const title = document.getElementById('logModalTitle');
+
+            if (type === 'debt') {
+                tabDebt.className = "py-2 rounded-lg text-xs font-bold transition-all bg-rose-950 text-rose-300 border border-rose-800/40";
+                tabCredit.className = "py-2 rounded-lg text-xs font-bold transition-all text-slate-400";
+                title.innerText = "إضافة دين جديد (شراء بالآجل)";
+            } else {
+                tabCredit.className = "py-2 rounded-lg text-xs font-bold transition-all bg-emerald-950 text-emerald-300 border border-emerald-800/40";
+                tabDebt.className = "py-2 rounded-lg text-xs font-bold transition-all text-slate-400";
+                title.innerText = "تسجيل تسديد نقدي (قبض مالي)";
+            }
+        }
+
+        // حفظ معاملة جديدة
+        function saveTransaction(e) {
+            e.preventDefault();
+            const type = document.getElementById('logTypeInput').value;
+            const customerId = document.getElementById('logCustomerSelect').value;
+            const amount = parseFloat(document.getElementById('logAmountInput').value);
+            const note = document.getElementById('logNoteInput').value.trim();
+
+            if (!customerId || isNaN(amount) || amount <= 0) {
+                alertNotification('يرجى إدخال قيم صحيحة للمبلغ واختيار العميل', 'error');
+                return;
+            }
+
+            const targetCust = customers.find(c => c.id === customerId);
+            if (!targetCust) return;
+
+            const updatedBalance = type === 'debt'
+                ? (targetCust.balance || 0) + amount
+                : Math.max(0, (targetCust.balance || 0) - amount);
+
+            const newTx = {
+                id: `t_${Date.now()}`,
+                type: type,
+                amount: amount,
+                date: new Date().toISOString().split('T')[0],
+                note: note || (type === 'debt' ? 'شراء بضاعة بالآجل' : 'تسديد مبلغ مالي')
+            };
+
+            targetCust.balance = updatedBalance;
+            targetCust.lastActive = newTx.date;
+            targetCust.history = [newTx, ...(targetCust.history || [])];
+
+            saveToStorage();
+            closeModal('logTxModal');
+
+            // تصفير الخانات
+            document.getElementById('logAmountInput').value = '';
+            document.getElementById('logNoteInput').value = '';
+
+            // احتفالية تصفية الدين بالكامل
+            if (type === 'credit' && updatedBalance === 0) {
+                const celeb = document.getElementById('celebrationOverlay');
+                celeb.classList.remove('hidden');
+                setTimeout(() => {
+                    celeb.classList.add('hidden');
+                }, 4000);
+                alertNotification(`🎉 رائع! تم تسوية حساب الزبون ${targetCust.name} بالكامل!`);
+            } else {
+                alertNotification(`تم تسجيل العملية بنجاح لصالح ${targetCust.name}`);
+            }
+
+            updateUI();
+        }
+
+        // إضافة زبون جديد
+        function addNewCustomer(e) {
+            e.preventDefault();
+            const name = document.getElementById('custNameInput').value.trim();
+            const phone = document.getElementById('custPhoneInput').value.trim();
+            const tag = document.getElementById('custTagSelect').value;
+
+            if (!name || !phone) {
+                alertNotification('يرجى ملء جميع الخانات الأساسية للعميل الجديد', 'error');
+                return;
+            }
+
+            const newCust = {
+                id: `c_${Date.now()}`,
+                name: name,
+                phone: phone,
+                tag: tag,
+                balance: 0,
+                lastActive: new Date().toISOString().split('T')[0],
+                history: []
+            };
+
+            customers = [newCust, ...customers];
+            selectedCustomerId = newCust.id;
+
+            saveToStorage();
+            closeModal('newCustModal');
+
+            // تصفير حقول المدخلات
+            document.getElementById('custNameInput').value = '';
+            document.getElementById('custPhoneInput').value = '';
+
+            alertNotification(`تم تسجيل الزبون الجديد "${name}" وحفظه بالدفتر`);
+            updateUI();
+        }
+
+        // تصفية نتائج البحث
+        function filterCustomers() {
+            renderCustomerList();
+        }
+
+        // تأكيد مسح البيانات كلياً
+        function confirmReset() {
+            try {
+                localStorage.removeItem('daftar_pay_customers');
+            } catch (e) {}
+            customers = DEFAULT_CUSTOMERS;
+            selectedCustomerId = DEFAULT_CUSTOMERS[0].id;
+            saveToStorage();
+            closeModal('resetModal');
+            alertNotification('تم تفريغ وإعادة ضبط المصنع للدفتر بنجاح!');
+            updateUI();
+        }
+
+        // بدء تشغيل البرنامج
+        window.onload = function() {
+            initApp();
+        };
+    </script>
+</body>
+</html>
